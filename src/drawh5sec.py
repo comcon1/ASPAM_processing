@@ -3,7 +3,6 @@
 import sys, getopt, time, os
 sys.path.append('../libdaq')
 from libdaq import RotCurveAnalyzer
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as mpl
 

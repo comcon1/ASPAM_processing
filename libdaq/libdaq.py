@@ -2,7 +2,6 @@
 
 import pandas as pd
 import numpy as np
-from matplotlib.mlab import *
 import timeutils as tmu
 import os
 

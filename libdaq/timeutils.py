@@ -2,7 +2,9 @@
 '''Some usefull time hooks basing on a simple time module. '''
 
 import time
-import matplotlib.mlab as mlab
+
+time2str = lambda x: \
+    time.strftime( '%d.%m.%Y %H:%M', time.localtime(x) )
 
 def frange(start,stop, step=1.0):
     while start < stop:
@@ -154,7 +156,10 @@ def form_inday_intervals(startm, stopm, daybords):
     else:
         raise AttributeError('Startm should differs from stopm!')
 
-    retar = frange(_begin, _end, 24*3600)
+    print (">>DEBUG", time2str(_begin), time2str(_end ), len(daybords) )
+
+#    retar = frange(_begin, _end, 24*3600)
+    retar = [_begin + i*24*3600 for i in range(len(daybords)) ]
     retar = [ (i,i+_int) for i in retar]
     if len(retar) == 0:
         raise AttributeError('Empty intervals: no data at all')
