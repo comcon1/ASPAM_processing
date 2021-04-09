@@ -19,6 +19,9 @@ class RawCurveAnalyzer(object):
         print( 'Analyzing file: %s (%.1f Kb)' % (self._fname, s.st_size/1024.) )
         self._ldr = pd.read_csv(fname, header=None, sep='\s+', comment='#', index_col=0)
 
+    def __init__(self):
+        self._ldr = pd.DataFrame([])
+
     def getData(self, start, stop, skip=1):
         '''Use -1 for start for the beginning and -1 for stop at the very end.
         One can extract skipped data.'''
@@ -35,6 +38,12 @@ class RawCurveAnalyzer(object):
 
 class RotCurveAnalyzer(RawCurveAnalyzer):
     '''Class for analyzing data of rat wheel rotations. '''
+
+    @classmethod
+    def fromDF(cls, dataFrame):
+        forRet = cls()
+        forRet._ldr = dataFrame
+        return forRet
 
     def genPartialSums(self, period='h'):
         '''Generate array of sums over hours and days. '''
