@@ -1,4 +1,4 @@
-all: rat1-h5.pdf rat1-dnav.xvg rat1-int15.xvg
+all: rat1-h5.pdf rat1-dnav.xvg rat1-int15.xvg all-ints.xvg
 	true
 
 clean:
@@ -15,3 +15,7 @@ rat1-dnav.xvg: rat1.xvg
 
 rat1-int15.xvg: rat1.xvg
 	../src/an-intervals.py -i rat1.xvg -o rat1-int15.xvg -d 8:00 -n 20:00 -m 15
+
+all-ints.xvg: test-data.xvg
+	../src/form-all-intervals.py -i test-data.xvg -o all-ints.xvg \
+		-s "25.01.2016 08:00" -p "15.02.2016 08:00" -d 08:00 -n 20:00 -m 15
