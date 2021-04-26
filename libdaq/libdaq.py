@@ -21,7 +21,11 @@ class RawCurveAnalyzer(object):
             print( 'No such file!' )
             return
         print( 'Analyzing file: %s (%.1f Kb)' % (self._fname, s.st_size/1024.) )
-        self._ldr = pd.read_csv(fname, header=None, sep='\s+', comment='#', index_col=0)
+
+        self._ldr = pd.read_csv(fname, header=None, sep='\s+', comment='#')
+        # set index separately to suppress FutureWarning
+        # https://stackoverflow.com/questions/40659212/futurewarning-elementwise-comparison-failed-returning-scalar-but-in-the-futur
+        self._ldr.set_index([0], inplace=True)
 
     def getData(self, start, stop, skip=1):
         '''Use -1 for start for the beginning and -1 for stop at the very end.
