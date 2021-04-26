@@ -8,8 +8,12 @@ import os
 
 class RawCurveAnalyzer(object):
 
-    def __init__(self, fname):
+    def __init__(self, fname=None):
         print( 'Raw Curve Analyzer starts.' )
+        if fname is None:
+            self._ldr = pd.DataFrame([])
+            return
+
         self._fname = fname
         try:
             s = os.stat(self._fname)
@@ -18,9 +22,6 @@ class RawCurveAnalyzer(object):
             return
         print( 'Analyzing file: %s (%.1f Kb)' % (self._fname, s.st_size/1024.) )
         self._ldr = pd.read_csv(fname, header=None, sep='\s+', comment='#', index_col=0)
-
-    def __init__(self):
-        self._ldr = pd.DataFrame([])
 
     def getData(self, start, stop, skip=1):
         '''Use -1 for start for the beginning and -1 for stop at the very end.

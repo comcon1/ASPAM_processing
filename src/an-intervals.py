@@ -65,7 +65,7 @@ def main():
         elif o == '-n':
             nighttime = a
         elif o == '-m':
-            minint = a
+            minint = int(a)
         elif o == '-t':
             turnstometers = float(a)
 
@@ -80,7 +80,6 @@ def main():
         mnight = int(nts[0])*60+int(nts[1])
         if mday > 60*24 or mnight > 60*24:
             raise ValueError('Numbers in time HH:MM')
-        minint = int(a)
     except Exception as e:
         print( e )
         print('Problems in time definition.')
