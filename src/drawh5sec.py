@@ -13,20 +13,23 @@ drawh5sec.py -i rat.xvg -o rat5h.pdf -d 9:00 -n 20:53
  -o Output filename (PDF format)
  -d Day-time start, HH:MM
  -n Night-time start, HH:MM
+ -t turns-to-meters [0.456 by default]
 
 Calculate overnight 5s -- histograms and plot them.
-5.58 - conversion coefficient into m/min.
+Speed is plotted in [m/min]
 Extract rat data from the whole datafile with `extract-rat.py` before run.
 
 """
-cset = ['-r', '-g','-b']
+
+# Colormap pre-selected: VIRIDIS
 time2str = lambda x: \
     time.strftime( '%d.%m.%Y %H:%M', time.localtime(x) )
+turnstometers = 0.456
 
 def main():
-
+    global turnstometers
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hm:i:o:d:n:')
+        opts, args = getopt.getopt(sys.argv[1:], 'hm:i:o:d:n:t')
     except getopt.error as msg:
         print( msg )
         print( 'for help use -h' )
@@ -46,6 +49,10 @@ def main():
             daytime = a
         elif o == '-n':
             nighttime = a
+        elif o == '-t':
+            turnstometers = float(a)
+
+    coeff_to_mmin = turnstometers*12
 
     if infile == '' or outf == '' or daytime == '' or nighttime == '':
         print( 'for help use -h' )
@@ -76,11 +83,13 @@ def main():
             rca.getFullDayNightData(mday, mday, mnight,
                                 rca.df.index[0], rca.df.index[-1])
     ndays = len(nightint)
+    print( 'N.days will be analysed: ', ndays )
     print( '=============' )
     print( 'DAY-NIGHT INTERVALS:' )
     for i in range(min(len(nightint),len(resni)) ):
-        print( '%s - %s  --  %d' % ( time2str(nightint[i][0]),
-                            time2str(nightint[i][1]), resni[i][1] ) )
+        print( '%d: %s - %s  --  %d' %
+              (i, time2str(nightint[i][0]),
+              time2str(nightint[i][1]), resni[i][1] ) )
 
     '''
     final statistics cycle
@@ -100,22 +109,27 @@ def main():
         _j =  rca.df.index.searchsorted(night_interval_stop)
         weekar[-1] += data[_i:_j, 1].tolist()
 
-    for i in range(len(weekar)):
-      weekar[i] = np.array(weekar[i])*5.58
+    nweeks = len(weekar)
+    print('N. of weeks will be plotted: ', nweeks)
+    for i in range(nweeks):
+      weekar[i] = np.array(weekar[i]) * coeff_to_mmin
 
 
     # drawing ..
     print( 'Drawing ..' )
+    from matplotlib import cm
+    viridis = cm.get_cmap('viridis', nweeks)
     fig = mpl.figure(figsize=(5,10))
     mpl.subplots_adjust(top=0.9,bottom=0.1,hspace=0.15, left=0.19, right=0.95)
     ax = mpl.subplot(211)
-    spints = np.array(range(2,20))*5.58
+    ax.set_prop_cycle('color',viridis.colors)
+    spints = np.array(range(2,20)) * coeff_to_mmin
 
     fd = open(outf+'.data', 'w')
     fd.write(''.join(map(lambda x: '%-6.1f  ' %x, spints))+'\n')
-    for w in range(3):
+    for w in range(nweeks):
         h,e = np.histogram(weekar[w], spints, density=True)
-        mpl.plot(e[:-1], h, cset[w], label=str(w+1))
+        mpl.plot(e[:-1], h, '-', label=str(w+1))
         fd.write(''.join(map(lambda x: '%-8.5f' %x, h))+'\n')
     mpl.legend(loc='upper right')
     fd.close()
